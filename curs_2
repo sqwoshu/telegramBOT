@@ -1,0 +1,183 @@
+from bs4 import BeautifulSoup
+import requests
+import telebot
+import requests
+from telebot import types
+
+cliend = telebot.TeleBot('1691244388:AAH8X6HYfxgOcbfxxN_pyu5E2eMLqRP6aZg')
+
+@cliend.message_handler(commands=['start'])
+def start(message):
+    rmk = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    rmk.add(types.KeyboardButton('USD 🇺🇸'),types.KeyboardButton('BTC'),types.KeyboardButton('EUR 🇪🇺')).add(types.KeyboardButton('JPY 🇯🇵'),types.KeyboardButton('KRW 🇰🇷'),types.KeyboardButton('CNY 🇨🇳')).add(types.KeyboardButton('UAH 🇺🇦'),types.KeyboardButton('BYN 🇧🇾'),types.KeyboardButton('KZT 🇰🇿')).add(types.KeyboardButton('Калькулятор'))
+
+    msg = cliend.send_message(message.chat.id, 'Здравстуйте,выберите  курс, который вас интерисует',reply_markup=rmk)
+    cliend.register_next_step_handler(msg,curs_vol)
+
+@cliend.message_handler(content_types = ['text'])
+def curs_vol(message):
+    if message.text == 'USD 🇺🇸':
+        curs_usd(message)
+    elif message.text == 'BTC':
+        curs_btc(message)
+    elif message.text == 'EUR 🇪🇺':
+        curs_eur(message)
+    elif message.text == 'JPY 🇯🇵':
+        curs_jpy(message)
+    elif message.text == 'KRW 🇰🇷':
+        curs_krw(message)
+    elif message.text == 'CNY 🇨🇳':
+        curs_cny(message)
+    elif message.text == 'UAH 🇺🇦':
+        curs_uah(message)
+    elif message.text == 'BYN 🇧🇾':
+        curs_byn(message)
+    elif message.text == 'KZT 🇰🇿':
+        curs_kzt(message)
+    elif message.text == 'Вернуться назад':
+        start(message)
+    elif message.text == 'Калькулятор':
+        calcul(message)
+    else:
+        cliend.send_message(message.chat.id,'Простите, но такой вылюты у нас нет')
+
+def calcul(message):
+        rmk = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        rmk.add(types.KeyboardButton('USD 🇺🇸')).add(types.KeyboardButton('Вернуться назад'))
+
+        msg = cliend.send_message(message.chat.id, 'Курс', reply_markup=rmk)
+        cliend.register_next_step_handler(msg, usd)
+
+def usd(message):
+    if message.text == 'Вернуться назад':
+        start(message)
+    elif message.text == 'USD 🇺🇸':
+        send = cliend.send_message(message.chat.id, 'кол-во')
+        cliend.register_next_step_handler(send, num)
+
+def num(message):
+    text = message.text
+    print(text)
+def curs_usd(message):
+    headers = {
+        'User-Agent':'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=%D0%B4%D0%BE%D0%BB%D0%BB%D0%B0%D1%80&oq=%D0%B4%D0%BE%D0%BB%D0%BB%D0%B0%D1%80&aqs=chrome.0.69i59j0i433l2j46i433j0i433j69i61j69i60j69i61.1453j0j7&sourceid=chrome&ie=UTF-8'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    usd_post = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+
+    cliend.send_message(message.chat.id,usd_post + ' ' + 'RUB')
+
+def curs_btc(message):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=%D0%B1%D0%B8%D1%82%D0%BA%D0%BE%D0%B8&ei=U86gYOq5Cs6yqwHXwrfoAg&oq=%D0%B1%D0%B8%D1%82%D0%BA%D0%BE%D0%B8&gs_lcp=Cgdnd3Mtd2l6EAMyDAgAELEDEEMQRhCCAjIKCAAQsQMQgwEQQzIFCAAQsQMyCggAELEDEIMBEEMyBQgAELEDMgUIABCxAzIFCAAQsQMyCAgAELEDEIMBMgUIABCxAzIICAAQsQMQgwE6BwgAEEcQsAM6BwgAELADEEM6AggAOgsIABCxAxDHARCjAjoHCAAQsQMQQzoECAAQQ1Dm4SFY--ghYPXtIWgBcAJ4AIABgAaIAaEOkgEJMC40LjIuNi0xmAEAoAEBqgEHZ3dzLXdpesgBCsABAQ&sclient=gws-wiz&ved=0ahUKEwiqr5Ki283wAhVO2SoKHVfhDS0Q4dUDCA4&uact=5'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    btc_post_rub = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+    lis = btc_post_rub
+    btc_rub = lis[0] + ' ' + lis[1] + lis[2] + lis[3] + ' ' + lis[4] + lis[5] + lis[6]
+
+    cliend.send_message(message.chat.id, btc_rub + ' ' + 'RUB')
+
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=%D0%B1%D0%B8%D1%82%D0%BA%D0%BE%D0%B8+%D0%BA+%D0%B4%D0%BE%D0%BB%D0%BB%D0%B0%D1%80%D1%83&ei=sdKgYMbWAs6FrwS8z7PYBg&oq=%D0%B1%D0%B8%D1%82%D0%BA%D0%BE%D0%B8+%D0%BA+%D0%B4%D0%BE%D0%BB%D0%BB%D0%B0%D1%80%D1%83&gs_lcp=Cgdnd3Mtd2l6EAMyDwgAELEDEIMBEAoQRhCCAjIECAAQCjIECAAQCjIECAAQCjIECAAQCjIECAAQCjIECAAQCjIECAAQCjIECAAQCjIECAAQCjoHCAAQRxCwAzoHCAAQsAMQQzoHCAAQsQMQCjoKCAAQsQMQgwEQCjoHCAAQsQMQQ1DmgQdYmZwHYIWfB2gDcAF4AoABuAeIAbIpkgENMC40LjMuMC4xLjAuNJgBAKABAaoBB2d3cy13aXrIAQnAAQE&sclient=gws-wiz&ved=0ahUKEwiG85e3383wAhXOwosKHbznDGsQ4dUDCA4&uact=5'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    btc_post_usd = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+    lis = btc_post_usd
+    btc_usd = lis[0] + lis[1] + ' ' + lis[2] + lis[3] + lis[4]
+
+    cliend.send_message(message.chat.id, btc_usd + ' ' + 'USD')
+
+def curs_eur(message):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=tdhj&ei=ONmgYOy7OK_2qwHV6rqwBw&oq=tdhj&gs_lcp=Cgdnd3Mtd2l6EAMyBwgAELEDEEMyBwgAELEDEAoyBggAEAoQATIKCAAQsQMQgwEQCjIMCAAQxwEQowIQChABMgYIABAKEAEyBggAEAoQATIMCAAQxwEQrwEQChABMgwIABDHARCvARAKEAEyBgguEAoQAToFCAAQsQM6AggAOggIABCxAxCDAToKCAAQxwEQowIQQzoNCAAQsQMQxwEQowIQQzoICAAQChABECpQmtMeWNXbHmDg3R5oAXAAeAGAAY8CiAGuB5IBBTAuNS4xmAEAoAEBqgEHZ3dzLXdperABAMABAQ&sclient=gws-wiz&ved=0ahUKEwjst7PU5c3wAhUv-yoKHVW1DnYQ4dUDCA4&uact=5'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    eur_post = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+
+    cliend.send_message(message.chat.id, eur_post + ' ' + 'RUB')
+
+def curs_jpy(message):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=%D0%B9%D0%B5%D0%BD+%D0%B2+%D1%80%D1%83%D0%B1%D0%BB%D0%B8&ei=N9-gYNT6NYGSrgSSrKCoBQ&oq=%D0%B9%D0%B5%D0%BD+&gs_lcp=Cgdnd3Mtd2l6EAMYADIECAAQQzIFCC4QsQMyAggAMgIIADICCAAyAggAMgIILjICCC4yAggAMgIIADoFCAAQsQM6CwgAELEDEMcBEKMCOggIABCxAxCDAToMCAAQsQMQQxBGEIICOgQILhBDOgcIABCxAxBDULNfWL9jYKBqaABwAngAgAG7AYgBsAWSAQMwLjWYAQCgAQGqAQdnd3Mtd2l6wAEB&sclient=gws-wiz'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    jpy_post = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+
+    cliend.send_message(message.chat.id, jpy_post + ' ' + 'RUB')
+
+def curs_krw(message):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=%D0%B2%D0%BE%D0%BD+%D0%B2+%D1%80%D1%83%D0%B1%D0%BB%D0%B8&ei=Vt2gYISUIOmlrgTqpbyICQ&oq=%D0%B2%D0%BE%D0%BD+%D0%B2&gs_lcp=Cgdnd3Mtd2l6EAMYADIHCAAQsQMQQzIECAAQQzICCAAyAggAMgIIADICCAAyAggAMgIIADICCC4yAggAOgoIABCxAxCDARBDOgsIABCxAxDHARCjAjoFCAAQsQM6DggAELEDEIMBEMcBEKMCOg0IABCxAxDHARCjAhBDOgUILhCxAzoHCC4QsQMQQzoICC4QsQMQgwE6DAgAELEDEEMQRhCCAlC0mR1YgaAdYIepHWgAcAJ4AIABwQGIAe0GkgEDMC42mAEAoAEBqgEHZ3dzLXdpesABAQ&sclient=gws-wiz'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    krw_post = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+
+    cliend.send_message(message.chat.id, krw_post + ' ' + 'RUB')
+
+def curs_cny(message):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=%D0%BA%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B8%D0%B5+%D1%8E%D0%B0%D0%BD%D0%B8+%D0%B2+%D1%80%D1%83%D0%B1%D0%BB%D0%B8&ei=JN2gYIe7G9Kk3APcgIuYDw&oq=%D0%BA%D0%B8%D1%82%D0%B0%D0%B9&gs_lcp=Cgdnd3Mtd2l6EAMYADIJCAAQQxBGEIICMgQIABBDMgUILhCxAzICCAAyBAgAEEMyBAgAEEMyAggAMgQIABBDMgQIABBDMgQIABBDOgUIABCxAzoICAAQsQMQgwE6CwgAELEDEMcBEKMCOggILhCxAxCDAToNCAAQsQMQxwEQowIQQzoECC4QQ1CE8gJY7fcCYJr_AmgAcAJ4AIABqwKIAaMIkgEFMC40LjKYAQCgAQGqAQdnd3Mtd2l6wAEB&sclient=gws-wiz'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    cny_post = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+
+    cliend.send_message(message.chat.id, cny_post + ' ' + 'RUB')
+
+def curs_uah(message):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=%D1%83%D0%BA%D1%80%D0%B0%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B5+%D1%80%D1%83%D0%B1%D0%BB%D0%B8&ei=N9-gYNT6NYGSrgSSrKCoBQ&oq=%D1%83%D0%BA%D1%80%D0%B0%D0%BD&gs_lcp=Cgdnd3Mtd2l6EAMYADIECAAQQzIECAAQQzIECAAQQzIECAAQQzIHCC4QsQMQQzICCAAyBwgAELEDEAoyBwgAELEDEAoyAggAMgIIADoFCAAQsQM6CAgAELEDEIMBOgIILjoKCAAQsQMQgwEQQzoFCC4QsQNQ1NocWKbhHGDe9xxoAHACeACAAbMBiAHdBpIBAzAuNpgBAKABAaoBB2d3cy13aXrAAQE&sclient=gws-wiz'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    uah_post = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+
+    cliend.send_message(message.chat.id, uah_post + ' ' + 'RUB')
+def curs_byn(message):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=%D0%B1%D0%B5%D0%BB%D0%BE%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B5+%D1%80%D1%83%D0%B1%D0%BB%D0%B8&oq=%D0%B1%D0%B5%D0%BB%D0%BE%D1%80%D1%83%D0%B9%D1%81%D0%BA%D0%B8%D0%B5&aqs=chrome.1.69i57j0i13i433j0i13l8.6445j1j7&sourceid=chrome&ie=UTF-8'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    byn_post = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+
+    cliend.send_message(message.chat.id, byn_post + ' ' + 'RUB')
+def curs_kzt(message):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36'
+    }
+    url = 'https://www.google.com/search?q=%D1%82%D0%BD%D0%B3+%D0%B2+%D1%80%D1%83%D0%B1%D0%BB%D0%B8&oq=%D1%82%D0%BD%D0%B3+%D0%B2+%D1%80%D1%83%D0%B1%D0%BB%D0%B8&aqs=chrome.0.0l2j0i22i30l8.2741j0j7&sourceid=chrome&ie=UTF-8'
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'lxml')
+
+    kzt_post = soup.find('input', class_='a61j6 vk_gy vk_sh Hg3mWc').get('value')
+
+    cliend.send_message(message.chat.id, kzt_post + ' ' + 'RUB')
+
+cliend.polling(none_stop=True, interval= 0)
