@@ -164,7 +164,7 @@ def num(message):
         kzts.clear()
 
 
-    elif num.isdigit() == False or number(num) == True:
+    elif num.isdigit() == True or number(num) == True:
         rmk = types.ReplyKeyboardMarkup(resize_keyboard=True)
         rmk.add(types.KeyboardButton('Калькулятор'),types.KeyboardButton('Вернуться на главное меню'))
         c.append(float(num))
