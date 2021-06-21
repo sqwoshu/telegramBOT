@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 import telebot
-import requests
 from telebot import types
 from decimal import Decimal
 
